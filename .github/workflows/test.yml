@@ -1,0 +1,52 @@
+name: CI_Tests
+on: [push]
+jobs:
+
+            server_tests:
+
+                runs-on: ubuntu-latest
+
+                defaults:
+
+                    run:
+                        working-directory: ./app
+
+                env:
+                    MONGO_INITDB_ROOT_USERNAME: lappis
+                    MONGO_INITDB_ROOT_PASSWORD: lappis
+                    MONGO_INITDB_ROOT_DB: mongo
+                    MONGO_PORT: 27017
+
+                services:
+                    postgres_main:
+                        image: mongo:3.1
+                        env:
+                            MONGO_INITDB_ROOT_USERNAME: ${{ env.MONGO_INITDB_ROOT_USERNAME }}
+                            MONGO_INITDB_ROOT_PASSWORD: ${{ env.MONGO_INITDB_ROOT_PASSWORD }}
+                            MONGO_INITDB_ROOT_DB: ${{ env.MONGO_INITDB_ROOT_DB }}
+                        ports:
+                            - 27017:27017
+
+                steps:
+                    - name: Checkout code
+                      uses: actions/checkout@v2
+                    - name: Setup Python ${{ matrix.python-version }}
+                      uses: actions/setup-python@v2
+                      with:
+                        python-version: 3.8
+                    - name: pip install requirements
+                      run: |
+                        pip install -r requirements.txt
+
+                    - name: db
+                      env:
+                        DEBUG: "0"
+                        MONGO_INITDB_ROOT_USERNAME: ${{ env.MONGO_INITDB_ROOT_USERNAME }}
+                        MONGO_INITDB_ROOT_PASSWORD: ${{ env.MONGO_INITDB_ROOT_PASSWORD }}
+                        MONGO_INITDB_ROOT_DB: ${{ env.MONGO_INITDB_ROOT_DB }}
+                        DB_PORT: ${{ env.MONGO_PORT }}
+
+                      run: |
+                        python manage.py makemigrations
+                        python manage.py migrate
+                        python manage.py test
