@@ -6,11 +6,6 @@ jobs:
 
                 runs-on: ubuntu-latest
 
-                defaults:
-
-                    run:
-                        working-directory: ./app
-
                 env:
                     MONGO_INITDB_ROOT_USERNAME: lappis
                     MONGO_INITDB_ROOT_PASSWORD: lappis
