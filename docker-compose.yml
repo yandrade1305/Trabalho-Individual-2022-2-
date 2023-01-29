@@ -11,19 +11,6 @@ services:
         ports:
         - '27017:27017'
 
-    app:
-        depends_on:
-            - db
-        build: 
-            dockerfile: Dockerfile
-        container_name: app
-        # restart: always
-        working_dir: /app/app
-        volumes:
-            - .:/app/
-        ports:
-            - 8000:8000
-
     mbdb:
         container_name: app_metabase
         image: postgres:latest
